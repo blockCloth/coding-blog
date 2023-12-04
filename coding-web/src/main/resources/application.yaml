@@ -1,0 +1,56 @@
+spring:
+  config:
+    import: application-dev.yaml
+
+  servlet:
+    multipart:
+      enabled: true #开启文件上传
+      max-file-size: 10MB #限制文件上传大小为10M
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    encoding: UTF-8 #编码
+    suffix: .html #模板后缀
+    mode: HTML #模板
+
+server:
+  port: 8080
+
+#mybatis-plus:
+#  mapper-locations:
+#    - classpath:dao/*.xml
+#    - classpath*:com/**/mapper/*.xml
+#  global-config:
+#    db-config:
+#    table-underline: true
+#  configuration:
+#    map-underscore-to-camel-case: true
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+  openapi:
+    title: 个人blog
+    version: 1.0.0
+    description: 一个基于 Spring Boot、MyBatis-Plus、MySQL、Redis、ElasticSearch、RabbitMQ 等技术栈实现的个人博客系统，主要脱胎于技术派+编程喵
+    contact:
+      - blockCloth
+      - https://blockCloth.com
+    email: blockClothSword@gmail.com
+    group:
+      admin:
+        group-name: 后台接口分组
+        api-rule: package
+        api-rule-resources:
+          - com.coding.blog.web.admin
+      front:
+        group-name: 前台接口分组
+        api-rule: package
+        api-rule-resources:
+          - com.coding.blog.web.front
+

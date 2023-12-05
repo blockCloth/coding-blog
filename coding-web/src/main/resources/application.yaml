@@ -39,8 +39,8 @@ knife4j:
     version: 1.0.0
     description: 一个基于 Spring Boot、MyBatis-Plus、MySQL、Redis、ElasticSearch、RabbitMQ 等技术栈实现的个人博客系统，主要脱胎于技术派+编程喵
     contact:
-      - blockCloth
-      - https://blockCloth.com
+        name: blockCloth
+        url: https://blockCloth.com
     email: blockClothSword@gmail.com
     group:
       admin:
@@ -53,4 +53,7 @@ knife4j:
         api-rule: package
         api-rule-resources:
           - com.coding.blog.web.front
-
+logging:
+  level:
+    root: info
+    org.springframework: info

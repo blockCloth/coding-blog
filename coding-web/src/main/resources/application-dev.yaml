@@ -1,5 +1,7 @@
 database:
   name: conding_blog
+log:
+  path: logs
 
 spring:
   datasource:

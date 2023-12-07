@@ -19,6 +19,11 @@
     </properties>
 
     <dependencies>
-
+        <!--service模块-->
+        <dependency>
+            <groupId>com.coding.blog.service</groupId>
+            <artifactId>coding-service</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 </project>

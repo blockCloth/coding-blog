@@ -1,5 +1,6 @@
 package com.coding.blog.service.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -30,7 +31,7 @@ public class PostTagRelation implements Serializable {
     private Long postId;
 
     @ApiModelProperty("标签ID")
-    @TableId("post_tag_id")
+    @TableField(value = "post_tag_id", insertStrategy = FieldStrategy.IGNORED)
     private Long postTagId;
 
     @ApiModelProperty("排序")

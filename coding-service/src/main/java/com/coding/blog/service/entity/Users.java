@@ -6,10 +6,18 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  * <p>
@@ -21,6 +29,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@ToString
 @TableName("users")
 @ApiModel(value = "Users对象", description = "用户表")
 public class Users implements Serializable {
@@ -78,4 +87,5 @@ public class Users implements Serializable {
     @ApiModelProperty("属性")
     @TableField("attribute")
     private String attribute;
+
 }

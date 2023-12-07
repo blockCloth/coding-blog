@@ -2,6 +2,7 @@ package com.coding.blog.service.mapper;
 
 import com.coding.blog.service.entity.Users;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.coding.blog.service.vo.UserDetailVo;
 
 /**
  * <p>
@@ -13,4 +14,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface UsersMapper extends BaseMapper<Users> {
 
+    UserDetailVo getUserDetail(Integer userId);
 }

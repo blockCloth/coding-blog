@@ -1,5 +1,6 @@
 package com.coding.blog.service.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -30,7 +31,7 @@ public class TermRelationships implements Serializable {
     private Long termRelationshipsId;
 
     @ApiModelProperty("栏目ID")
-    @TableId("term_taxonomy_id")
+    @TableField(value = "term_taxonomy_id", insertStrategy = FieldStrategy.IGNORED)
     private Long termTaxonomyId;
 
     @ApiModelProperty("排序")
@@ -38,6 +39,6 @@ public class TermRelationships implements Serializable {
     private Integer termOrder;
 
     @ApiModelProperty("类型,0:内容,1:链接")
-    @TableId("type")
+    @TableField(value = "type", insertStrategy = FieldStrategy.IGNORED)
     private Integer type;
 }

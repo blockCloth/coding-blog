@@ -1,7 +1,10 @@
 package com.coding.blog.service.mapper;
 
+import com.coding.blog.service.entity.Menu;
 import com.coding.blog.service.entity.RoleMenuRelation;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface RoleMenuRelationMapper extends BaseMapper<RoleMenuRelation> {
 
+    List<Long> selectMenuIdsByRoleId(Long roleId);
+
+    List<Menu> listMenu(Long roleId);
 }

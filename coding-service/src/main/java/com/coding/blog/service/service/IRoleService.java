@@ -1,6 +1,8 @@
 package com.coding.blog.service.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.coding.blog.service.entity.Menu;
+import com.coding.blog.service.entity.Resource;
 import com.coding.blog.service.entity.Role;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -21,4 +23,14 @@ public interface IRoleService extends IService<Role> {
     boolean deleteRoleBatch(List<Integer> ids);
 
     IPage<Role> queryRolePages(Integer pageNum, Integer pageSize);
+
+    boolean allocMenu(Long roleId, List<Long> menuIds);
+
+    List<Menu> listMenus(Long roleId);
+
+    boolean allocResources(Long roleId, List<Long> resIds);
+
+    List<Resource> listResource(Long roleId);
+
+    boolean deleteRoleById(Long roleId);
 }

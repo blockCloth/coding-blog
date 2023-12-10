@@ -1,12 +1,16 @@
 package com.coding.blog.web.admin;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.coding.blog.service.dto.ResourceParam;
+import com.coding.blog.service.entity.Resource;
+import com.coding.blog.service.service.IResourceService;
 import com.coding.blog.service.vo.ResultObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * <p>
@@ -21,9 +25,60 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/resource")
 public class ResourceController {
 
+    @Autowired
+    private IResourceService resourceService;
+
     @ApiOperation("添加资源信息")
     @PostMapping("saveResource")
     public ResultObject saveResource(@Validated ResourceParam resourceParam){
+        Resource resource = new Resource();
+        BeanUtils.copyProperties(resourceParam,resource);
+        if (resource != null && resourceService.saveResource(resource)){
+            return ResultObject.success();
+        }
+        return ResultObject.failed();
+    }
 
+    @ApiOperation("修改资源信息")
+    @PutMapping("updateResource")
+    public ResultObject updateResource(@Validated ResourceParam resourceParam){
+        Resource resource = new Resource();
+        BeanUtils.copyProperties(resourceParam,resource);
+        if (resource != null && resourceService.updateById(resource)){
+            return ResultObject.success();
+        }
+        return ResultObject.failed();
+    }
+
+    @ApiOperation("删除资源信息")
+    @DeleteMapping("deleteResource")
+    public ResultObject deleteResource(Long resourceId){
+        if (resourceId == null) return ResultObject.failed("资源ID不能为空！");
+
+        if (resourceService.deleteResource(resourceId)){
+            return ResultObject.success();
+        }
+        return ResultObject.failed();
+    }
+
+    @ApiOperation("分页查询资源信息")
+    @GetMapping("queryListAll")
+    public ResultObject queryListAll(@RequestParam(defaultValue = "1") Integer pageNum,
+                                     @RequestParam(defaultValue = "5") Integer pageSize){
+        IPage<Resource> resourceIPage = resourceService.queryListAll(pageNum, pageSize);
+        if (resourceIPage != null){
+            return ResultObject.success(resourceIPage);
+        }
+        return ResultObject.failed();
+    }
+
+    @ApiOperation("查询详细资源信息")
+    @GetMapping("queryDetail")
+    public ResultObject queryDetail(Integer resourceId){
+        Resource resource = resourceService.getById(resourceId);
+        if (resource != null){
+            return ResultObject.success(resource);
+        }
+        return ResultObject.failed();
     }
 }

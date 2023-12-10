@@ -45,14 +45,15 @@ public class JwtTokenUtil {
      */
     private String generateToken(Map<String, Object> claims) {
         return Jwts.builder()
-                .addClaims(claims) //设置payload
-                .setExpiration(generateExpirationDate()) //设置过期时间
-                .signWith(SignatureAlgorithm.HS512, secret) //设置签名
+                .addClaims(claims) // 设置payload
+                .setExpiration(generateExpirationDate()) // 设置过期时间
+                .signWith(SignatureAlgorithm.HS512, secret) // 设置签名
                 .compact();
     }
 
     /**
      * 设置过期时间
+     *
      * @return
      */
     private Date generateExpirationDate() {
@@ -62,7 +63,7 @@ public class JwtTokenUtil {
     /**
      * 从token中获取登录用户名
      */
-    public String getUserNameFromToken(String token){
+    public String getUserNameFromToken(String token) {
         String username = null;
         Claims claims = getClaimsFromToken(token);
         if (claims != null) {
@@ -77,12 +78,12 @@ public class JwtTokenUtil {
     private Claims getClaimsFromToken(String token) {
         Claims claims = null;
         try {
-            claims = Jwts.parser() //解析token
-                    .setSigningKey(secret) //设置签名
-                    .parseClaimsJws(token) //获取负载
+            claims = Jwts.parser() // 解析token
+                    .setSigningKey(secret) // 设置签名
+                    .parseClaimsJws(token) // 获取负载
                     .getBody();
         } catch (Exception e) {
-            log.info("JWT格式验证失败:{}", token);
+            log.warn("JWT格式验证失败:{}", token);
         }
         return claims;
     }
@@ -112,5 +113,21 @@ public class JwtTokenUtil {
     private Date getExpiredDateFromToken(String token) {
         Claims claims = getClaimsFromToken(token);
         return claims.getExpiration();
+    }
+
+
+    /**
+     * 刷新token
+     */
+    public String refreshToken(String oldToken) {
+        String refreshedToken;
+        try {
+            final Claims claims = getClaimsFromToken(oldToken);
+            claims.put(CLAIM_KEY_CREATED, new Date());
+            refreshedToken = generateToken(claims);
+        } catch (Exception e) {
+            refreshedToken = null;
+        }
+        return refreshedToken;
     }
 }

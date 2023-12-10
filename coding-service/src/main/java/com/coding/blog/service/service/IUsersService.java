@@ -8,6 +8,7 @@ import com.coding.blog.service.vo.UserDetailVo;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -27,7 +28,7 @@ public interface IUsersService extends IService<Users> {
 
     boolean deleteBatch(List<Integer> ids);
 
-    Users getUserDetail(Integer userId);
+    UserDetailVo getUserDetail(Long userId);
 
     IPage<Users> getAllUserDetail(int pageNum, int pageSize);
 
@@ -38,4 +39,7 @@ public interface IUsersService extends IService<Users> {
     List<Role> queryRoles(Long userId);
 
     boolean roleRemove(Long userId, Long roleId);
+
+    Map<String, Object> getInfo();
+
 }

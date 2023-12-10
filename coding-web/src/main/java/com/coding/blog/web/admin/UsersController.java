@@ -1,5 +1,6 @@
 package com.coding.blog.web.admin;
 
+import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.coding.blog.common.util.JwtTokenUtil;
 import com.coding.blog.service.dto.UsersLoginParam;
@@ -80,10 +81,8 @@ public class UsersController {
         Users users = new Users();
         BeanUtils.copyProperties(registerParam,users);
         if (users != null && usersService.register(users)) {
-            log.info("用户注册成功！", LocalDateTime.now());
             return ResultObject.success("注册成功！");
         }
-        log.warn("用户注册失败！{}",LocalDateTime.now());
         return ResultObject.failed("注册失败！");
     }
 
@@ -93,21 +92,17 @@ public class UsersController {
         Users users = new Users();
         BeanUtils.copyProperties(updateParam,users);
         if (users != null && usersService.updateById(users)){
-            log.info("用户修改成功！{}",LocalDateTime.now());
             return ResultObject.success("修改成功！");
         }
-        log.warn("用户修改失败！{}",LocalDateTime.now());
         return ResultObject.failed("修改失败！");
     }
 
     @ApiOperation("用户删除")
-    @DeleteMapping("/delete/{userId}")
-    public ResultObject deleteById(@PathVariable("userId") Integer userId){
+    @DeleteMapping("/delete")
+    public ResultObject deleteById(Integer userId){
         if (usersService.removeById(userId)){
-            log.info("用户删除成功！{}",LocalDateTime.now());
             return ResultObject.success("用户删除成功！");
         }
-        log.warn("用户删除失败！{}",LocalDateTime.now());
         return ResultObject.failed("用户删除失败！");
     }
 
@@ -123,15 +118,23 @@ public class UsersController {
     }
 
     @ApiOperation("查询用户详细信息")
-    @GetMapping("/getUserDetail/{userId}")
-    public ResultObject getUserDetail(@PathVariable("userId") Integer userId){
-        Users users = usersService.getUserDetail(userId);
+    @GetMapping("/getUserDetail")
+    public ResultObject getUserDetail(@RequestParam Long userId){
+        UserDetailVo users = usersService.getUserDetail(userId);
         if (users != null){
-            log.info("查询用户详细信息成功！{}",LocalDateTime.now());
             return ResultObject.success(users,"查询用户详细信息成功！");
         }
-        log.warn("查询用户详细信息失败！{}",LocalDateTime.now());
         return ResultObject.failed("查询用户详细信息失败！");
+    }
+
+    @ApiOperation("查询当前用户的详细信息")
+    @GetMapping("/info")
+    public ResultObject info(){
+        Map<String, Object> info = usersService.getInfo();
+        if (CollUtil.isNotEmpty(info)){
+            return ResultObject.success(info);
+        }
+        return ResultObject.failed();
     }
 
     @ApiOperation("查询所有用户详细信息")

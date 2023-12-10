@@ -1,8 +1,13 @@
 package com.coding.blog.service.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.coding.blog.common.enumapi.StatusEnum;
+import com.coding.blog.common.util.ExceptionUtil;
 import com.coding.blog.service.entity.Menu;
+import com.coding.blog.service.entity.RoleMenuRelation;
+import com.coding.blog.service.entity.RoleResourceRelation;
 import com.coding.blog.service.mapper.MenuMapper;
+import com.coding.blog.service.mapper.RoleMenuRelationMapper;
 import com.coding.blog.service.service.IMenuService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.coding.blog.service.vo.MenuDetailVo;
@@ -30,13 +35,15 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 
     @Autowired
     private MenuMapper menuMapper;
+    @Autowired
+    private RoleMenuRelationMapper roleMenuRelationMapper;
 
     @Override
     public boolean saveMenu(Menu menu) {
         // 判断menu是否添加过
         if (menuMapper.selectCount(
                 new QueryWrapper<Menu>().eq("title", menu.getTitle())) > 0) {
-            return false;
+            ExceptionUtil.of(StatusEnum.SYSTEM_MENU_EXISTS);
         }
         if (menu.getParentId() == null) {
             menu.setParentId(0L);
@@ -59,10 +66,15 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements IM
 
     @Override
     public boolean deleteMenuById(Integer menuId) {
+        //判断菜单是否被引用
+        if (roleMenuRelationMapper.selectCount(
+                new QueryWrapper<RoleMenuRelation>().eq("menu_id",menuId)) > 0) {
+            ExceptionUtil.of(StatusEnum.SYSTEM_DATA_USE);
+        }
         // 判断该菜单下是否还有子菜单
         if (menuMapper.selectCount(
                 new QueryWrapper<Menu>().eq("parent_id", menuId)) > 0) {
-            return false;
+            ExceptionUtil.of(StatusEnum.SYSTEM_MENU_IS_CHILDREN);
         }
 
         return menuMapper.deleteById(menuId) > 0;

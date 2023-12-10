@@ -1,5 +1,6 @@
 package com.coding.blog.service.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.coding.blog.service.entity.Resource;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -13,4 +14,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IResourceService extends IService<Resource> {
 
+    boolean saveResource(Resource resource);
+
+    boolean deleteResource(Long resourceId);
+
+    IPage<Resource> queryListAll(Integer pageNum, Integer pageSize);
 }

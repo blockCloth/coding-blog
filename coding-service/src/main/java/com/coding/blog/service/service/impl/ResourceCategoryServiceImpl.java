@@ -3,6 +3,8 @@ package com.coding.blog.service.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.coding.blog.common.enumapi.StatusEnum;
+import com.coding.blog.common.util.ExceptionUtil;
 import com.coding.blog.service.entity.Resource;
 import com.coding.blog.service.entity.ResourceCategory;
 import com.coding.blog.service.mapper.ResourceCategoryMapper;
@@ -40,8 +42,7 @@ public class ResourceCategoryServiceImpl extends ServiceImpl<ResourceCategoryMap
     public boolean saveResourceCategory(ResourceCategory resourceCategory) {
         if (resourceCategoryMapper.selectCount(
                 new QueryWrapper<ResourceCategory>().eq("name",resourceCategory.getName())) > 0)
-            return false;
-
+            ExceptionUtil.of(StatusEnum.SYSTEM_RESOURCE_CATEGORY_EXISTS);
         resourceCategory.setCreateTime(LocalDateTime.now());
         resourceCategory.setSort(0);
         return save(resourceCategory);
@@ -53,7 +54,7 @@ public class ResourceCategoryServiceImpl extends ServiceImpl<ResourceCategoryMap
         if (resourceMapper.selectCount(
                 new QueryWrapper<Resource>().eq("category_id",resourceCategoryId)) > 0){
             //提示信息
-            return false;
+            ExceptionUtil.of(StatusEnum.SYSTEM_DATA_USE);
         }
         return resourceCategoryMapper.deleteById(resourceCategoryId) > 0;
     }

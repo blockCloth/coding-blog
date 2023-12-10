@@ -1,10 +1,14 @@
 package com.coding.blog.service.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.coding.blog.common.enumapi.StatusEnum;
+import com.coding.blog.common.util.ExceptionUtil;
 import com.coding.blog.common.util.JwtTokenUtil;
 import com.coding.blog.service.entity.AdminRoleRelation;
+import com.coding.blog.service.entity.Menu;
 import com.coding.blog.service.entity.Role;
 import com.coding.blog.service.entity.Users;
 import com.coding.blog.service.mapper.AdminRoleRelationMapper;
@@ -15,6 +19,7 @@ import com.coding.blog.service.service.IUsersService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.coding.blog.service.vo.UserDetailVo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,7 +31,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLDataException;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -63,6 +69,7 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
             // 验证密码
             if (!passwordEncoder.matches(userPass, userDetails.getPassword())) {
                 // Asserts.fail("密码不正确");
+                ExceptionUtil.of(StatusEnum.LOGIN_FAILED_PASS);
             }
 
             // 返回 JWT
@@ -98,7 +105,7 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
         Long userLogin = usersMapper.selectCount(new QueryWrapper<Users>()
                 .eq("user_login", users.getUserLogin()));
         if (userLogin > 0) {
-            return false;
+            ExceptionUtil.of(StatusEnum.USER_EXISTS);
         }
         // 设置其他内容
         String encodePass = passwordEncoder.encode(users.getUserPass());
@@ -111,15 +118,27 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
     }
 
     @Override
-    @Transactional //需要添加回滚异常，等待自定义
+    @Transactional(rollbackFor = SQLDataException.class) //需要添加回滚异常，等待自定义
     public boolean deleteBatch(List<Integer> ids) {
         return usersMapper.deleteBatchIds(ids) >= 1;
     }
 
     @Override
-    public Users getUserDetail(Integer userId) {
-        return usersMapper.selectById(userId);
+    public UserDetailVo getUserDetail(Long userId) {
+        Users users = usersMapper.selectById(userId);
+
+        if (users != null){
+            UserDetailVo userDetailVo = new UserDetailVo();
+            BeanUtils.copyProperties(users,userDetailVo);
+            //查询角色信息
+            List<Role> roles = adminRoleMapper.getRoleByUserId(userId);
+            userDetailVo.setRoles(roles);
+            return userDetailVo;
+        }
+        return null;
     }
+
+
 
     @Override
     public IPage<Users> getAllUserDetail(int pageNum, int pageSize) {
@@ -133,13 +152,9 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
         //获取用户
         Users users = adminUserDetails.getUsers();
 
-        if (users == null){
-            //提示信息
-            return false;
-        }
         if (!passwordEncoder.matches(oldPass, users.getUserPass())){
             //需要提示信息
-            return false;
+            ExceptionUtil.of(StatusEnum.LOGIN_FAILED_NOT_OLDPASS);
         }
         //设置新密码
         users.setUserPass(passwordEncoder.encode(newPass));
@@ -152,12 +167,12 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
     public boolean roleSave(Long userId, List<Long> roleIds) {
         //判断用户是否为空
         if (usersMapper.selectById(userId) == null){
-            return false;
+            ExceptionUtil.of(StatusEnum.USER_NOT_EXISTS);
         }
         //判断角色是否存在
         for (Long roleId : roleIds) {
             if (roleMapper.selectById(roleId) == null){
-                return false;
+                ExceptionUtil.of(StatusEnum.SYSTEM_ROLE_NOT_EXISTS);
             }
         }
 
@@ -184,6 +199,31 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
     @Override
     public boolean roleRemove(Long userId, Long roleId) {
         return adminRoleMapper.roleRemove(userId,roleId) > 0;
+    }
+
+    @Override
+    public Map<String, Object> getInfo() {
+        AdminUserDetails adminUserDetails =
+                (AdminUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        //获取users
+        Users users = adminUserDetails.getUsers();
+        users.setUserPass("");
+        //获取用户菜单
+        List<Menu> menus = roleMapper.getListMensByUserId(users.getUsersId());
+        Map<String, Object> data = new HashMap<>();
+        data.put("userDetail",users);
+        data.put("username", users.getUserLogin());
+        data.put("menus", menus);
+        data.put("icon", users.getDisplayName());
+        //通过用户ID查询角色信息
+        List<Role> roleList =  roleMapper.getListRoleByUserId(users.getUsersId());
+
+        if (CollUtil.isNotEmpty(roleList)){
+            List<String> roles = roleList.stream().map(Role::getName).collect(Collectors.toList());
+            data.put("roles", roles);
+        }
+
+        return data;
     }
 
 }

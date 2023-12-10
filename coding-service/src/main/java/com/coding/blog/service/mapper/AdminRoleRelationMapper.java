@@ -21,4 +21,6 @@ public interface AdminRoleRelationMapper extends BaseMapper<AdminRoleRelation> {
     List<Role> queryRoles(Long userId);
 
     int roleRemove(Long userId, Long roleId);
+
+    List<Role> getRoleByUserId(Long userId);
 }

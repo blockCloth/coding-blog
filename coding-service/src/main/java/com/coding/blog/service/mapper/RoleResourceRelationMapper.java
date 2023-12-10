@@ -1,7 +1,10 @@
 package com.coding.blog.service.mapper;
 
+import com.coding.blog.service.entity.Resource;
 import com.coding.blog.service.entity.RoleResourceRelation;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface RoleResourceRelationMapper extends BaseMapper<RoleResourceRelation> {
 
+    List<Long> selectResIdsByRoleId(Long roleId);
+
+    List<Resource> listResource(Long roleId);
 }

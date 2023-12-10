@@ -2,6 +2,9 @@ package com.coding.blog.service.mapper;
 
 import com.coding.blog.service.entity.AdminRoleRelation;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.coding.blog.service.entity.Role;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,9 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface AdminRoleRelationMapper extends BaseMapper<AdminRoleRelation> {
 
+    List<Long> selectRoleIdsByUserId(Long userId);
+
+    List<Role> queryRoles(Long userId);
+
+    int roleRemove(Long userId, Long roleId);
 }

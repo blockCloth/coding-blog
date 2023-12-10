@@ -1,7 +1,10 @@
 package com.coding.blog.service.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.coding.blog.service.entity.Role;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IRoleService extends IService<Role> {
 
+    boolean addRole(Role role);
+
+    boolean deleteRoleBatch(List<Integer> ids);
+
+    IPage<Role> queryRolePages(Integer pageNum, Integer pageSize);
 }

@@ -1,6 +1,7 @@
 package com.coding.blog.service.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.coding.blog.service.entity.Role;
 import com.coding.blog.service.entity.Users;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.coding.blog.service.vo.UserDetailVo;
@@ -31,4 +32,10 @@ public interface IUsersService extends IService<Users> {
     IPage<Users> getAllUserDetail(int pageNum, int pageSize);
 
     boolean updateUserPass(String newPass,String oldPass);
+
+    boolean roleSave(Long userId, List<Long> roleIds);
+
+    List<Role> queryRoles(Long userId);
+
+    boolean roleRemove(Long userId, Long roleId);
 }

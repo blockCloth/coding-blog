@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -27,28 +28,19 @@ public class UsersUpdateParam implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty("users_id")
-    @TableId(value = "users_id", type = IdType.AUTO)
     private Long usersId;
 
     @ApiModelProperty("昵称")
-    @TableField("user_nicename")
+    @NotBlank(message="昵称不能为空")
     private String userNicename;
 
     @ApiModelProperty("Email")
-    @TableField("user_email")
     private String userEmail;
 
     @ApiModelProperty("网址")
-    @TableField("user_url")
     private String userUrl;
 
     @ApiModelProperty("图像")
-    @TableField("display_name")
     private String displayName;
-
-    @ApiModelProperty("属性")
-    @TableField("attribute")
-    private String attribute;
 
 }

@@ -4,7 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.coding.blog.common.util.JwtTokenUtil;
+import com.coding.blog.service.entity.AdminRoleRelation;
+import com.coding.blog.service.entity.Role;
 import com.coding.blog.service.entity.Users;
+import com.coding.blog.service.mapper.AdminRoleRelationMapper;
+import com.coding.blog.service.mapper.RoleMapper;
 import com.coding.blog.service.mapper.UsersMapper;
 import com.coding.blog.service.model.AdminUserDetails;
 import com.coding.blog.service.service.IUsersService;
@@ -20,6 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLDataException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -42,6 +47,11 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
     private JwtTokenUtil jwtTokenUtil;
     @Autowired
     private UsersMapper usersMapper;
+    @Autowired
+    private AdminRoleRelationMapper adminRoleMapper;
+    @Autowired
+    private RoleMapper roleMapper;
+
 
     public String login(String userLogin, String userPass) {
         String token = null;
@@ -135,6 +145,45 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
         users.setUserPass(passwordEncoder.encode(newPass));
 
         return usersMapper.updateById(users) > 0;
+    }
+
+    @Override
+    @Transactional(rollbackFor = SQLDataException.class)
+    public boolean roleSave(Long userId, List<Long> roleIds) {
+        //判断用户是否为空
+        if (usersMapper.selectById(userId) == null){
+            return false;
+        }
+        //判断角色是否存在
+        for (Long roleId : roleIds) {
+            if (roleMapper.selectById(roleId) == null){
+                return false;
+            }
+        }
+
+        // 检查用户是否已经拥有这些角色
+        List<Long> existingRoleIds = adminRoleMapper.selectRoleIdsByUserId(userId);
+        roleIds.removeAll(existingRoleIds);
+
+        // 添加用户角色
+        for (Long roleId : roleIds) {
+            AdminRoleRelation relation = new AdminRoleRelation();
+            relation.setUsersId(userId);
+            relation.setRoleId(roleId);
+            adminRoleMapper.insert(relation);
+        }
+
+        return true;
+    }
+
+    @Override
+    public List<Role> queryRoles(Long userId) {
+        return adminRoleMapper.queryRoles(userId);
+    }
+
+    @Override
+    public boolean roleRemove(Long userId, Long roleId) {
+        return adminRoleMapper.roleRemove(userId,roleId) > 0;
     }
 
 }

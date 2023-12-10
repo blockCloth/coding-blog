@@ -5,6 +5,7 @@ import com.coding.blog.common.util.JwtTokenUtil;
 import com.coding.blog.service.dto.UsersLoginParam;
 import com.coding.blog.service.dto.UsersRegisterParam;
 import com.coding.blog.service.dto.UsersUpdateParam;
+import com.coding.blog.service.entity.Role;
 import com.coding.blog.service.entity.Users;
 import com.coding.blog.service.service.IUsersService;
 import com.coding.blog.service.vo.ResultObject;
@@ -34,7 +35,7 @@ import java.util.Map;
  * @author blockCloth
  * @since 2023-12-04
  */
-@Api("用户")
+@Api(tags = "后台用户管理")
 @Slf4j
 @RestController
 @RequestMapping("/users")
@@ -188,4 +189,36 @@ public class UsersController {
     //     log.warn("用户密码修改失败！{}",LocalDateTime.now());
     //     return ResultObject.failed("用户密码修改失败！");
     // }
+
+    @ApiOperation("获取指定用户的角色")
+    @GetMapping("/role/query")
+    public ResultObject queryRoles(@RequestParam Long userId){
+        List<Role> roles = usersService.queryRoles(userId);
+        if (roles != null && roles.size() > 0){
+
+            return ResultObject.success(roles);
+        }
+        return ResultObject.failed();
+    }
+
+    @ApiOperation("给用户分配角色")
+    @PostMapping("/role/save")
+    public ResultObject roleSave(@RequestParam Long userId,
+                                 @RequestParam List<Long> roleIds){
+        if (usersService.roleSave(userId,roleIds)){
+            return ResultObject.success();
+        }
+        return ResultObject.failed();
+    }
+
+    @ApiOperation("取消用户角色")
+    @DeleteMapping("/role/remove")
+    public ResultObject roleRemove(@RequestParam Long userId,
+                                 @RequestParam Long roleId){
+        if (usersService.roleRemove(userId,roleId)){
+            return ResultObject.success();
+        }
+        return ResultObject.failed();
+    }
+
 }

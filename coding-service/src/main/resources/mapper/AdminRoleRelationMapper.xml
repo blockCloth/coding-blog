@@ -30,5 +30,15 @@
             ar.users_id = #{userId}
 
     </select>
+    <select id="getResourceList" resultType="com.coding.blog.service.entity.Resource">
+        SELECT ru.*
+        FROM admin_role_relation ar
+                 LEFT JOIN role r ON ar.role_id = r.role_id
+                 LEFT JOIN role_resource_relation rr on r.role_id = rr.role_id
+                 LEFT JOIN resource ru on rr.resource_id = ru.resource_id
+        WHERE ar.users_id = #{userId}
+          AND ru.resource_id IS NOT NULL
+        GROUP BY ru.resource_id
+    </select>
 
 </mapper>

@@ -73,6 +73,7 @@
     <logger name="springfox.documentation.spring" level="warn" additivity="false">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="service"/>
+
     </logger>
 
     <!-- 指定项目中某个包，当有日志操作行为时的日志记录级别 -->
@@ -81,11 +82,13 @@
     <logger name="com.coding.blog" level="INFO" additivity="false">
         <appender-ref ref="service"/>
         <appender-ref ref="STDOUT"/>
+
     </logger>
 
     <!-- 控制台输出日志级别 -->
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="service"/>
+        <appender-ref ref="reqLog"/>
     </root>
 </configuration>

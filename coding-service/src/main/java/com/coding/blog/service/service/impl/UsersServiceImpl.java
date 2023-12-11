@@ -7,10 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.coding.blog.common.enumapi.StatusEnum;
 import com.coding.blog.common.util.ExceptionUtil;
 import com.coding.blog.common.util.JwtTokenUtil;
-import com.coding.blog.service.entity.AdminRoleRelation;
-import com.coding.blog.service.entity.Menu;
-import com.coding.blog.service.entity.Role;
-import com.coding.blog.service.entity.Users;
+import com.coding.blog.service.entity.*;
 import com.coding.blog.service.mapper.AdminRoleRelationMapper;
 import com.coding.blog.service.mapper.RoleMapper;
 import com.coding.blog.service.mapper.UsersMapper;
@@ -55,6 +52,7 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
     private UsersMapper usersMapper;
     @Autowired
     private AdminRoleRelationMapper adminRoleMapper;
+
     @Autowired
     private RoleMapper roleMapper;
 
@@ -84,12 +82,19 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
         // 查询用户
         Users users = getAdminByUsername(userLogin);
         if (users != null) {
-            // List<Resource> resourceList = getResourceList(users.getUsersId());
-            return new AdminUserDetails(users);
-            // return users;
+            List<Resource> resourceList = getResourceList(users.getUsersId());
+            return new AdminUserDetails(users,resourceList);
         }
 
         throw new UsernameNotFoundException("用户名或密码错误");
+    }
+
+    private List<Resource> getResourceList(Long adminId) {
+        log.info("根据用户{}找到资源", adminId);
+        List<Resource> resourceList = adminRoleMapper.getResourceList(adminId);
+        log.info("根据用户获取数据库中的资源大小{}, 内容{}", resourceList.size(), resourceList);
+
+        return resourceList;
     }
 
 

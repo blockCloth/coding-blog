@@ -2,6 +2,9 @@ package com.coding.blog.service.mapper;
 
 import com.coding.blog.service.entity.PostTagRelation;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.coding.blog.service.vo.PostTagVo;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface PostTagRelationMapper extends BaseMapper<PostTagRelation> {
 
+    List<PostTagVo> queryPostByTagId(Long postTagId);
 }

@@ -58,6 +58,7 @@ logging:
   level:
     root: info
     org.springframework: info
+    com.coding.blog.service.mapper: debug
 
 secure:
   ignored:

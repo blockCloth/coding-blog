@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 /**
  * @User Administrator
@@ -19,7 +20,7 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 @ApiModel(value = "PostTag对象", description = "标签表")
-public class PostTagParam {
+public class PostTagParam implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty("post_tag_id")

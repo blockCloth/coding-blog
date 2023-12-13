@@ -6,6 +6,7 @@ import com.coding.blog.service.entity.PostTag;
 import com.coding.blog.service.service.IPostTagService;
 import com.coding.blog.service.vo.PostTagVo;
 import com.coding.blog.service.vo.ResultObject;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import java.util.List;
  * @author blockCloth
  * @since 2023-12-04
  */
+@Api(tags = "后台标签管理")
 @RestController
 @RequestMapping("/postTag")
 public class PostTagController {

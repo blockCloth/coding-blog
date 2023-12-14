@@ -1,5 +1,6 @@
 package com.coding.blog.service.service;
 
+import com.coding.blog.service.dto.PostsParam;
 import com.coding.blog.service.entity.Posts;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -13,4 +14,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IPostsService extends IService<Posts> {
 
+    boolean savePost(PostsParam postsParam);
+
+    boolean updatePost(PostsParam postsParam);
+
+    boolean deletePostById(Long postId);
 }

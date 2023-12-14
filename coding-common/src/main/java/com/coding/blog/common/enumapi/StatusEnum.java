@@ -62,6 +62,9 @@ public enum StatusEnum {
     SYSTEM_RESOURCE_CATEGORY_EXISTS(300_404_007,"该源分类已存在！"),
     // 系统-专栏异常
     SYSTEM_TERM_IS_CHILDREN(300_404_009,"存在子专栏，禁止删除！"),
+    //系统-文章相关异常
+    SYSTEM_POST_ID_NOT_EXISTS(300_404_010,"文章ID必须存在！"),
+    SYSTEM_POST_NOT_EXISTS(300_404_011,"文章不存在，请勿重试！"),
 
     // 用户相关异常
     LOGIN_FAILED_MIXED(400_403_001, "登录失败"),

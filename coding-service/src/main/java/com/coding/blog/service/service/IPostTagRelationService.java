@@ -3,6 +3,8 @@ package com.coding.blog.service.service;
 import com.coding.blog.service.entity.PostTagRelation;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 /**
  * <p>
  * 标签文章关系表 服务类
@@ -13,4 +15,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IPostTagRelationService extends IService<PostTagRelation> {
 
+    boolean deletePostsTag(Long postId);
+    boolean insertOrUpdate(List<Long> tagIds, Long postsId);
 }

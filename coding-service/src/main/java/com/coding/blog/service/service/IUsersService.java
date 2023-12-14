@@ -42,4 +42,8 @@ public interface IUsersService extends IService<Users> {
 
     Map<String, Object> getInfo();
 
+    /**
+     * 获取当前登录用户ID
+     */
+    Long getCurrentUserId();
 }

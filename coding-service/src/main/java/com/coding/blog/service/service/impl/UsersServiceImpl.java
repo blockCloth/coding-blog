@@ -231,4 +231,11 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
         return data;
     }
 
+    @Override
+    public Long getCurrentUserId() {
+        AdminUserDetails userDetails = (AdminUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        return userDetails.getUsers().getUsersId();
+    }
+
 }

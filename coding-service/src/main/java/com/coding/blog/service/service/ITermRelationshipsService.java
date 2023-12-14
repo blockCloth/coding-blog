@@ -12,5 +12,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2023-12-04
  */
 public interface ITermRelationshipsService extends IService<TermRelationships> {
-
+    boolean deleteTermRelationships(Long postsId);
+    boolean insertOrUpdate(Long termTaxonomyId, Long postsId);
 }

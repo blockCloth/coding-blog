@@ -1,19 +1,21 @@
 package com.coding.blog.service.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.coding.blog.common.enumapi.StatusEnum;
 import com.coding.blog.common.enumapi.TermRelationType;
 import com.coding.blog.common.util.ExceptionUtil;
 import com.coding.blog.service.dto.PostsParam;
+import com.coding.blog.service.entity.PostTag;
 import com.coding.blog.service.entity.Posts;
 import com.coding.blog.service.entity.TermRelationships;
+import com.coding.blog.service.entity.TermTaxonomy;
 import com.coding.blog.service.mapper.PostsMapper;
 import com.coding.blog.service.mapper.TermRelationshipsMapper;
-import com.coding.blog.service.service.IPostTagRelationService;
-import com.coding.blog.service.service.IPostsService;
+import com.coding.blog.service.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.coding.blog.service.service.ITermRelationshipsService;
-import com.coding.blog.service.service.IUsersService;
+import com.coding.blog.service.vo.PostDetailVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLDataException;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * <p>
@@ -42,6 +45,7 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
     private ITermRelationshipsService termRelationshipsService;
     @Autowired
     private IPostTagRelationService postTagRelationService;
+
 
     @Override
     @Transactional(rollbackFor = SQLDataException.class)
@@ -65,7 +69,6 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
 
         //设置默认浏览量
         posts.setPageView(0L);
-
 
         //保存文章
         save(posts);
@@ -125,6 +128,61 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
 
         // TODO 删除浏览量、点赞（还未做缓存）
         return removeById(postId);
+    }
+
+    @Override
+    public PostDetailVo queryPostDetailById(Long postId) {
+        PostDetailVo detailVo = new PostDetailVo();
+        //查询文章信息
+        Posts posts = postsMapper.selectById(postId);
+        detailVo.setPosts(posts);
+        //查询专栏信息
+        TermTaxonomy termTaxonomy = termRelationshipsService.queryTermTaxonomyById(postId);
+        if (termTaxonomy != null){
+            detailVo.setTermTaxonomy(termTaxonomy);
+        }
+        //查询标签信息
+        List<PostTag> postTags = postTagRelationService.queryPostTagsById(postId);
+        if (CollUtil.isNotEmpty(postTags)){
+            detailVo.setPostTagList(postTags);
+        }
+        return detailVo;
+    }
+
+    @Override
+    public IPage<Posts> queryPostsList(Integer pageNum, Integer pageSize) {
+        Page<Posts> page = new Page(pageNum,pageSize);
+        return postsMapper.selectPage(page,null);
+    }
+
+    @Override
+    public boolean insertPostToTerm(Long postId, Long termTaxonomyId) {
+        return termRelationshipsService.insertOrUpdate(termTaxonomyId,postId);
+    }
+
+    @Override
+    public boolean insertPostToTags(Long postId, List<Long> tagsId) {
+        return postTagRelationService.insertOrUpdate(tagsId,postId);
+    }
+
+    @Override
+    public boolean updatePostToTerm(Long postId, Long termTaxonomyId) {
+        return termRelationshipsService.insertOrUpdate(termTaxonomyId,postId);
+    }
+
+    @Override
+    public boolean updatePostToTags(Long postId, List<Long> tagsId) {
+        return postTagRelationService.insertOrUpdate(tagsId,postId);
+    }
+
+    @Override
+    public boolean deletePostToTerm(Long postId) {
+        return termRelationshipsService.deleteTermRelationships(postId);
+    }
+
+    @Override
+    public boolean deletePostToTags(Long postId) {
+        return postTagRelationService.deletePostsTag(postId);
     }
 
     /**

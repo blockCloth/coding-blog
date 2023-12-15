@@ -3,6 +3,7 @@ package com.coding.blog.service.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.coding.blog.common.enumapi.TermRelationType;
 import com.coding.blog.service.entity.TermRelationships;
+import com.coding.blog.service.entity.TermTaxonomy;
 import com.coding.blog.service.mapper.TermRelationshipsMapper;
 import com.coding.blog.service.service.ITermRelationshipsService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -49,5 +50,10 @@ public class TermRelationshipsServiceImpl extends ServiceImpl<TermRelationshipsM
         relationships.setType(TermRelationType.CONTENT.getType());
 
         return save(relationships);
+    }
+
+    @Override
+    public TermTaxonomy queryTermTaxonomyById(Long postId) {
+        return termRelationshipsMapper.queryTermTaxonomyById(postId);
     }
 }

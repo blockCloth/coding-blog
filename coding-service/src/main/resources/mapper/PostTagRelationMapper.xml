@@ -15,4 +15,12 @@
           and p.posts_id is not NULL
         GROUP BY p.posts_id
     </select>
+    <select id="queryPostTagsById" resultType="com.coding.blog.service.entity.PostTag">
+        SELECT pt.*
+        FROM post_tag_relation ptr
+                 LEFT JOIN post_tag pt on ptr.post_tag_id = pt.post_tag_id
+        WHERE ptr.post_id = #{postId}
+          and pt.post_tag_id is not NULL
+        GROUP BY pt.post_tag_id
+    </select>
 </mapper>

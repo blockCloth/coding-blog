@@ -26,4 +26,5 @@ public interface ITermTaxonomyService extends IService<TermTaxonomy> {
     List<TermTaxonomyVo> queryAllTermTaxonomyTree();
 
     List<TermTaxonomyPostVo> queryTermTaxonomyPosts(Long termTaxonomyId);
+
 }

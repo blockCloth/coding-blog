@@ -1,6 +1,7 @@
 package com.coding.blog.service.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.coding.blog.service.entity.PostTag;
 import com.coding.blog.service.entity.PostTagRelation;
 import com.coding.blog.service.mapper.PostTagRelationMapper;
 import com.coding.blog.service.service.IPostTagRelationService;
@@ -53,5 +54,11 @@ public class PostTagRelationServiceImpl extends ServiceImpl<PostTagRelationMappe
             save(postTagRelation);
         }
         return order > 0;
+    }
+
+    @Override
+    public List<PostTag> queryPostTagsById(Long postId) {
+
+        return postTagRelationMapper.queryPostTagsById(postId);
     }
 }

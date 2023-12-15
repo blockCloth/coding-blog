@@ -2,6 +2,7 @@ package com.coding.blog.service.mapper;
 
 import com.coding.blog.service.entity.TermRelationships;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.coding.blog.service.entity.TermTaxonomy;
 import com.coding.blog.service.vo.TermTaxonomyPostVo;
 
 import java.util.List;
@@ -17,4 +18,6 @@ import java.util.List;
 public interface TermRelationshipsMapper extends BaseMapper<TermRelationships> {
 
     List<TermTaxonomyPostVo> queryTermTaxonomyPosts(Long termTaxonomyId);
+
+    TermTaxonomy queryTermTaxonomyById(Long postId);
 }

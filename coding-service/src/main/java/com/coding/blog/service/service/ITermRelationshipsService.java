@@ -2,6 +2,7 @@ package com.coding.blog.service.service;
 
 import com.coding.blog.service.entity.TermRelationships;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.coding.blog.service.entity.TermTaxonomy;
 
 /**
  * <p>
@@ -13,5 +14,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ITermRelationshipsService extends IService<TermRelationships> {
     boolean deleteTermRelationships(Long postsId);
+
     boolean insertOrUpdate(Long termTaxonomyId, Long postsId);
+
+    TermTaxonomy queryTermTaxonomyById(Long postId);
+
 }

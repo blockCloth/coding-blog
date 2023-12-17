@@ -47,6 +47,7 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
     private IPostTagRelationService postTagRelationService;
 
 
+
     @Override
     @Transactional(rollbackFor = SQLDataException.class)
     public boolean savePost(PostsParam postsParam) {

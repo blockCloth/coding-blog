@@ -11,7 +11,7 @@ import org.springframework.context.annotation.ComponentScan;
  * Hello world!
  */
 @Slf4j
-// @ComponentScan("com.coding.blog")
+@ComponentScan("com.coding.blog")
 @ServletComponentScan
 @SpringBootApplication
 public class CodingBlogApplication {

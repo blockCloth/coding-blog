@@ -1,6 +1,8 @@
 package com.coding.blog.service;
 
+import com.coding.blog.common.util.RedisTemplateUtil;
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -15,4 +17,6 @@ import org.springframework.core.annotation.Order;
 @ComponentScan("com.coding.blog.service")
 @MapperScan(basePackages = "com.coding.blog.service.mapper")
 public class ServiceAutoConfig {
+
+
 }

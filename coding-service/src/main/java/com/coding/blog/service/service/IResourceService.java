@@ -19,4 +19,6 @@ public interface IResourceService extends IService<Resource> {
     boolean deleteResource(Long resourceId);
 
     IPage<Resource> queryListAll(Integer pageNum, Integer pageSize);
+
+    void delResourceCache();
 }

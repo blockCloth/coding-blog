@@ -24,4 +24,5 @@ public interface IPostTagService extends IService<PostTag> {
 
     List<PostTagVo> queryPostByTagId(Long postTagId);
 
+    void delPostTagCache();
 }

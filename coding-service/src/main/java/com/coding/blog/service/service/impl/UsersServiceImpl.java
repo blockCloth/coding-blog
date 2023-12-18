@@ -4,9 +4,11 @@ import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.coding.blog.common.enumapi.RedisConstants;
 import com.coding.blog.common.enumapi.StatusEnum;
 import com.coding.blog.common.util.ExceptionUtil;
 import com.coding.blog.common.util.JwtTokenUtil;
+import com.coding.blog.common.util.RedisTemplateUtil;
 import com.coding.blog.service.entity.*;
 import com.coding.blog.service.mapper.AdminRoleRelationMapper;
 import com.coding.blog.service.mapper.RoleMapper;
@@ -52,10 +54,10 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
     private UsersMapper usersMapper;
     @Autowired
     private AdminRoleRelationMapper adminRoleMapper;
-
     @Autowired
     private RoleMapper roleMapper;
-
+    @Autowired
+    private RedisTemplateUtil redisTemplateUtil;
 
     public String login(String userLogin, String userPass) {
         String token = null;
@@ -83,7 +85,7 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
         Users users = getAdminByUsername(userLogin);
         if (users != null) {
             List<Resource> resourceList = getResourceList(users.getUsersId());
-            return new AdminUserDetails(users,resourceList);
+            return new AdminUserDetails(users, resourceList);
         }
 
         throw new UsernameNotFoundException("用户名或密码错误");
@@ -91,10 +93,16 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
 
     private List<Resource> getResourceList(Long adminId) {
         log.info("根据用户{}找到资源", adminId);
-        List<Resource> resourceList = adminRoleMapper.getResourceList(adminId);
-        log.info("根据用户获取数据库中的资源大小{}, 内容{}", resourceList.size(), resourceList);
+        List<Resource> resourcesCache =
+                (List<Resource>) redisTemplateUtil.hGet(RedisConstants.REDIS_KEY_RESOURCE_ADMIN,adminId.toString());
 
-        return resourceList;
+        if (CollUtil.isEmpty(resourcesCache)){
+            List<Resource> resourceList = adminRoleMapper.getResourceList(adminId);
+            log.info("根据用户获取数据库中的资源大小{}, 内容{}", resourceList.size(), resourceList);
+            redisTemplateUtil.hSet(RedisConstants.REDIS_KEY_RESOURCE_ADMIN,adminId.toString(),resourceList);
+            resourcesCache = resourceList;
+        }
+        return resourcesCache;
     }
 
 
@@ -123,7 +131,7 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
     }
 
     @Override
-    @Transactional(rollbackFor = SQLDataException.class) //需要添加回滚异常，等待自定义
+    @Transactional(rollbackFor = SQLDataException.class) // 需要添加回滚异常，等待自定义
     public boolean deleteBatch(List<Integer> ids) {
         return usersMapper.deleteBatchIds(ids) >= 1;
     }
@@ -132,10 +140,10 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
     public UserDetailVo getUserDetail(Long userId) {
         Users users = usersMapper.selectById(userId);
 
-        if (users != null){
+        if (users != null) {
             UserDetailVo userDetailVo = new UserDetailVo();
-            BeanUtils.copyProperties(users,userDetailVo);
-            //查询角色信息
+            BeanUtils.copyProperties(users, userDetailVo);
+            // 查询角色信息
             List<Role> roles = adminRoleMapper.getRoleByUserId(userId);
             userDetailVo.setRoles(roles);
             return userDetailVo;
@@ -144,24 +152,23 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
     }
 
 
-
     @Override
     public IPage<Users> getAllUserDetail(int pageNum, int pageSize) {
         Page<Users> page = new Page<>(pageNum, pageSize);
-        return usersMapper.selectPage(page,new QueryWrapper<>());
+        return usersMapper.selectPage(page, new QueryWrapper<>());
     }
 
     @Override
-    public boolean updateUserPass(String newPass,String oldPass) {
+    public boolean updateUserPass(String newPass, String oldPass) {
         AdminUserDetails adminUserDetails = (AdminUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        //获取用户
+        // 获取用户
         Users users = adminUserDetails.getUsers();
 
-        if (!passwordEncoder.matches(oldPass, users.getUserPass())){
-            //需要提示信息
+        if (!passwordEncoder.matches(oldPass, users.getUserPass())) {
+            // 需要提示信息
             ExceptionUtil.of(StatusEnum.LOGIN_FAILED_NOT_OLDPASS);
         }
-        //设置新密码
+        // 设置新密码
         users.setUserPass(passwordEncoder.encode(newPass));
 
         return usersMapper.updateById(users) > 0;
@@ -170,13 +177,13 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
     @Override
     @Transactional(rollbackFor = SQLDataException.class)
     public boolean roleSave(Long userId, List<Long> roleIds) {
-        //判断用户是否为空
-        if (usersMapper.selectById(userId) == null){
+        // 判断用户是否为空
+        if (usersMapper.selectById(userId) == null) {
             ExceptionUtil.of(StatusEnum.USER_NOT_EXISTS);
         }
-        //判断角色是否存在
+        // 判断角色是否存在
         for (Long roleId : roleIds) {
-            if (roleMapper.selectById(roleId) == null){
+            if (roleMapper.selectById(roleId) == null) {
                 ExceptionUtil.of(StatusEnum.SYSTEM_ROLE_NOT_EXISTS);
             }
         }
@@ -203,27 +210,27 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
 
     @Override
     public boolean roleRemove(Long userId, Long roleId) {
-        return adminRoleMapper.roleRemove(userId,roleId) > 0;
+        return adminRoleMapper.roleRemove(userId, roleId) > 0;
     }
 
     @Override
     public Map<String, Object> getInfo() {
         AdminUserDetails adminUserDetails =
-                (AdminUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        //获取users
+                (AdminUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        // 获取users
         Users users = adminUserDetails.getUsers();
         users.setUserPass("");
-        //获取用户菜单
+        // 获取用户菜单
         List<Menu> menus = roleMapper.getListMensByUserId(users.getUsersId());
         Map<String, Object> data = new HashMap<>();
-        data.put("userDetail",users);
+        data.put("userDetail", users);
         data.put("username", users.getUserLogin());
         data.put("menus", menus);
         data.put("icon", users.getDisplayName());
-        //通过用户ID查询角色信息
-        List<Role> roleList =  roleMapper.getListRoleByUserId(users.getUsersId());
+        // 通过用户ID查询角色信息
+        List<Role> roleList = roleMapper.getListRoleByUserId(users.getUsersId());
 
-        if (CollUtil.isNotEmpty(roleList)){
+        if (CollUtil.isNotEmpty(roleList)) {
             List<String> roles = roleList.stream().map(Role::getName).collect(Collectors.toList());
             data.put("roles", roles);
         }

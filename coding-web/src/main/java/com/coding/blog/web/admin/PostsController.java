@@ -109,7 +109,6 @@ public class PostsController {
     @PutMapping("updatePostToTerm")
     public ResultObject updatePostToTerm(@RequestParam Long postId,
                                          @RequestParam Long termTaxonomyId){
-
         if (postsService.updatePostToTerm(postId,termTaxonomyId)){
             return ResultObject.success();
         }

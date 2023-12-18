@@ -45,6 +45,7 @@ public class ResourceController {
         Resource resource = new Resource();
         BeanUtils.copyProperties(resourceParam,resource);
         if (resource != null && resourceService.updateById(resource)){
+            resourceService.delResourceCache();
             return ResultObject.success();
         }
         return ResultObject.failed();

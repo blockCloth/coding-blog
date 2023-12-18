@@ -41,11 +41,12 @@ public class MenuController {
     }
 
     @ApiOperation("修改菜单信息")
-    @PostMapping("updateMenu")
+    @PutMapping("updateMenu")
     public ResultObject updateMenu(MenuParam menuParam){
         Menu menu = new Menu();
         BeanUtils.copyProperties(menuParam,menu);
         if (menu != null && menuService.updateById(menu)){
+            menuService.delRedisCache();
             return ResultObject.success();
         }
         return ResultObject.failed();
@@ -53,7 +54,7 @@ public class MenuController {
 
     @ApiOperation("删除菜单信息")
     @DeleteMapping("deleteMenu")
-    public ResultObject deleteMenuById(Integer menuId){
+    public ResultObject deleteMenuById(Long menuId){
 
         if (menuId != null && menuService.deleteMenuById(menuId)){
             return ResultObject.success();
@@ -84,10 +85,12 @@ public class MenuController {
 
     @ApiOperation("设置菜单是否隐藏")
     @PutMapping("setMenuHidden")
-    public ResultObject setMenuHidden(Integer menuId,Integer hidden){
+    public ResultObject setMenuHidden(Long menuId,Integer hidden){
         if ((menuId == null || hidden == null) || (hidden != 0 && hidden != 1))
             return ResultObject.failed("请填写正确的参数！");
 
+        //隐藏之前删除Redis缓存
+        menuService.delRedisCache();
         Menu menu = menuService.getById(menuId);
         menu.setHidden(hidden);
 

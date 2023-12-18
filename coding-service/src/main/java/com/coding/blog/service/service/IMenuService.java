@@ -18,10 +18,11 @@ public interface IMenuService extends IService<Menu> {
 
     boolean saveMenu(Menu menu);
 
-    boolean deleteMenuById(Integer menuId);
+    boolean deleteMenuById(Long menuId);
 
     List<MenuDetailVo> queryMenuById(Long menuId);
 
     List<MenuDetailVo> queryAllMenus();
 
+    void delRedisCache();
 }

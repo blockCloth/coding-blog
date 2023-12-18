@@ -51,13 +51,14 @@ public class TermTaxonomyController {
         //设置修改时间
         termTaxonomy.setUpdateTime(LocalDateTime.now());
         if (termTaxonomy != null && taxonomyService.updateById(termTaxonomy)){
+            taxonomyService.delTermTaxonomyCache();
             return ResultObject.success();
         }
         return ResultObject.failed();
     }
 
     @ApiOperation("删除专栏信息")
-    @DeleteMapping("update")
+    @DeleteMapping("delete")
     public ResultObject deleteTermTaxonomyById(@RequestParam Long termTaxonomyId){
         if (termTaxonomyId == null) return  ResultObject.failed("专栏ID不能为空！");
 

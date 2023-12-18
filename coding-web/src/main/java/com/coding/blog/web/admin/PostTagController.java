@@ -47,6 +47,7 @@ public class PostTagController {
         PostTag postTag = new PostTag();
         BeanUtils.copyProperties(postTagParam, postTag);
         if (postTag != null && postTagService.updateById(postTag)) {
+            postTagService.delPostTagCache();
             return ResultObject.success();
         }
         return ResultObject.failed();

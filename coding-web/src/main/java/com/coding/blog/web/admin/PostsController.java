@@ -34,8 +34,8 @@ public class PostsController {
 
     @ApiOperation("保存文章信息")
     @PostMapping("save")
-    public ResultObject savePost(@Validated PostsParam postsParam){
-        if (postsParam != null && postsService.savePost(postsParam)){
+    public ResultObject savePost(@Validated PostsParam postsParam) {
+        if (postsParam != null && postsService.savePost(postsParam)) {
             return ResultObject.success();
         }
         return ResultObject.failed();
@@ -43,8 +43,8 @@ public class PostsController {
 
     @ApiOperation("修改文章信息")
     @PutMapping("update")
-    public ResultObject updatePost(@Validated PostsParam postsParam){
-        if (postsParam != null && postsService.updatePost(postsParam)){
+    public ResultObject updatePost(@Validated PostsParam postsParam) {
+        if (postsParam != null && postsService.updatePost(postsParam)) {
             return ResultObject.success();
         }
         return ResultObject.failed();
@@ -52,10 +52,10 @@ public class PostsController {
 
     @ApiOperation("删除文章信息")
     @DeleteMapping("delete")
-    public ResultObject deletePostById(@RequestParam Long postId){
+    public ResultObject deletePostById(@RequestParam Long postId) {
         if (postId == null) return ResultObject.failed("文章ID不能为空！");
 
-        if (postsService.deletePostById(postId)){
+        if (postsService.deletePostById(postId)) {
             return ResultObject.success();
         }
         return ResultObject.failed();
@@ -63,10 +63,10 @@ public class PostsController {
 
     @ApiOperation("查询文章详细信息")
     @GetMapping("queryPostDetailById")
-    public ResultObject queryPostDetailById(@RequestParam Long postId){
+    public ResultObject queryPostDetailById(@RequestParam Long postId) {
         if (postId == null) return ResultObject.failed("文章ID不能为空！");
         PostDetailVo postDetailVo = postsService.queryPostDetailById(postId);
-        if (postDetailVo != null){
+        if (postDetailVo != null) {
             return ResultObject.success(postDetailVo);
         }
         return ResultObject.failed();
@@ -74,11 +74,29 @@ public class PostsController {
 
     @ApiOperation("模糊查询文章列表")
     @GetMapping("queryPostsList")
-    public ResultObject queryPostsList( PostsQueryVO postsQueryVO){
+    public ResultObject queryPostsList(PostsQueryVO postsQueryVO) {
         IPage<Posts> postsIPage = postsService.queryPostsList(postsQueryVO);
 
-        if (postsIPage != null){
+        if (postsIPage != null) {
             return ResultObject.success(postsIPage);
+        }
+        return ResultObject.failed();
+    }
+
+    @ApiOperation("设置文章置顶")
+    @PostMapping("setArticleOnTop")
+    public ResultObject setArticleOnTop(Long postsId) {
+        if (postsService.setArticleOnTop(postsId) > 0) {
+            return ResultObject.success();
+        }
+        return ResultObject.failed();
+    }
+
+    @ApiOperation("取消文章置顶")
+    @PostMapping("cancelArticleOnTop")
+    public ResultObject cancelArticleOnTop(Long postsId) {
+        if (postsService.cancelArticleOnTop(postsId) > 0) {
+            return ResultObject.success();
         }
         return ResultObject.failed();
     }
@@ -86,9 +104,9 @@ public class PostsController {
     @ApiOperation("绑定文章到专栏")
     @PostMapping("insertPostToTerm")
     public ResultObject insertPostToTerm(@RequestParam Long postId,
-                                       @RequestParam Long termTaxonomyId){
+                                         @RequestParam Long termTaxonomyId) {
 
-        if (postsService.insertPostToTerm(postId,termTaxonomyId)){
+        if (postsService.insertPostToTerm(postId, termTaxonomyId)) {
             return ResultObject.success();
         }
         return ResultObject.failed();
@@ -97,9 +115,9 @@ public class PostsController {
     @ApiOperation("绑定文章的标签信息")
     @PostMapping("insertPostToTags")
     public ResultObject insertPostToTags(@RequestParam Long postId,
-                                         @RequestParam List<Long> tagsId){
+                                         @RequestParam List<Long> tagsId) {
 
-        if (postsService.insertPostToTags(postId,tagsId)){
+        if (postsService.insertPostToTags(postId, tagsId)) {
             return ResultObject.success();
         }
         return ResultObject.failed();
@@ -108,8 +126,8 @@ public class PostsController {
     @ApiOperation("修改文章的专栏信息")
     @PutMapping("updatePostToTerm")
     public ResultObject updatePostToTerm(@RequestParam Long postId,
-                                         @RequestParam Long termTaxonomyId){
-        if (postsService.updatePostToTerm(postId,termTaxonomyId)){
+                                         @RequestParam Long termTaxonomyId) {
+        if (postsService.updatePostToTerm(postId, termTaxonomyId)) {
             return ResultObject.success();
         }
         return ResultObject.failed();
@@ -118,9 +136,9 @@ public class PostsController {
     @ApiOperation("修改文章的标签信息")
     @PutMapping("updatePostToTags")
     public ResultObject updatePostToTags(@RequestParam Long postId,
-                                         @RequestParam List<Long> tagsId){
+                                         @RequestParam List<Long> tagsId) {
 
-        if (postsService.updatePostToTags(postId,tagsId)){
+        if (postsService.updatePostToTags(postId, tagsId)) {
             return ResultObject.success();
         }
         return ResultObject.failed();
@@ -128,9 +146,9 @@ public class PostsController {
 
     @ApiOperation("删除文章的专栏信息")
     @DeleteMapping("deletePostToTerm")
-    public ResultObject deletePostToTerm(@RequestParam Long postId){
+    public ResultObject deletePostToTerm(@RequestParam Long postId) {
 
-        if (postsService.deletePostToTerm(postId)){
+        if (postsService.deletePostToTerm(postId)) {
             return ResultObject.success();
         }
         return ResultObject.failed();
@@ -138,9 +156,9 @@ public class PostsController {
 
     @ApiOperation("删除文章的标签信息")
     @DeleteMapping("deletePostToTags")
-    public ResultObject deletePostToTags(@RequestParam Long postId){
+    public ResultObject deletePostToTags(@RequestParam Long postId) {
 
-        if (postsService.deletePostToTags(postId)){
+        if (postsService.deletePostToTags(postId)) {
             return ResultObject.success();
         }
         return ResultObject.failed();

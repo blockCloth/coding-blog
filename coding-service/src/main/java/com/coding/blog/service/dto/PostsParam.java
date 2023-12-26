@@ -65,7 +65,7 @@ public class PostsParam implements Serializable {
     private String htmlContent;
 
     @ApiModelProperty("标签属性")
-    private List<Long> tagIds;
+    private List<Long> tags;
 
     @ApiModelProperty("专栏ID")
     private Long termTaxonomyId;

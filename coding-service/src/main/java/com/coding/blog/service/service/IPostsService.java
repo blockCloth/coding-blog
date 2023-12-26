@@ -40,4 +40,8 @@ public interface IPostsService extends IService<Posts> {
     boolean deletePostToTags(Long postId);
 
     IPage<Posts> queryPostsList(PostsQueryVO postsQueryVO);
+
+    int setArticleOnTop(Long postsId);
+
+    int cancelArticleOnTop(Long postsId);
 }

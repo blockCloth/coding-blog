@@ -2,20 +2,18 @@ package com.coding.blog.service.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.coding.blog.common.enumapi.RedisConstants;
 import com.coding.blog.common.enumapi.StatusEnum;
-import com.coding.blog.common.enumapi.TermRelationType;
 import com.coding.blog.common.util.ExceptionUtil;
 import com.coding.blog.common.util.RedisTemplateUtil;
 import com.coding.blog.service.dto.PostsParam;
 import com.coding.blog.service.entity.PostTag;
 import com.coding.blog.service.entity.Posts;
-import com.coding.blog.service.entity.TermRelationships;
 import com.coding.blog.service.entity.TermTaxonomy;
 import com.coding.blog.service.mapper.PostsMapper;
-import com.coding.blog.service.mapper.TermRelationshipsMapper;
 import com.coding.blog.service.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.coding.blog.service.vo.PostDetailVo;
@@ -25,7 +23,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.sql.SQLDataException;
 import java.time.LocalDateTime;
@@ -217,17 +214,31 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
         return postsMapper.selectPage(page,queryWrapper);
     }
 
+    @Override
+    public int setArticleOnTop(Long postsId) {
+        return postsMapper.update(new UpdateWrapper<Posts>()
+                .eq("posts_id",postsId)
+                .set("menu_order",1));
+    }
+
+    @Override
+    public int cancelArticleOnTop(Long postsId) {
+        return postsMapper.update(new UpdateWrapper<Posts>()
+                .eq("posts_id",postsId)
+                .set("menu_order",0));
+    }
+
     /**
      * 保存或修改标签信息
      */
     private boolean insertOrUpdateTags(PostsParam postsParam, Posts posts) {
-        log.info("准备文章{}标签{}信息", posts.getPostsId(), postsParam.getTagIds());
+        log.info("准备文章{}标签{}信息", posts.getPostsId(), postsParam.getTags());
         // 判断IDS是否为空
-        if (CollUtil.isEmpty(postsParam.getTagIds())) {
+        if (CollUtil.isEmpty(postsParam.getTags())) {
             return false;
         }
         // 准备修改标签信息
-        return postTagRelationService.insertOrUpdate(postsParam.getTagIds(), posts.getPostsId());
+        return postTagRelationService.insertOrUpdate(postsParam.getTags(), posts.getPostsId());
     }
 
     /**
@@ -246,6 +257,6 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
 
     private void delPostRedisCache(Long postId) {
         redisTemplateUtil.del(RedisConstants.REDIS_KEY_POST);
-        redisTemplateUtil.hDel(RedisConstants.REDIS_KEY_POST_SINGLE, postId);
+        redisTemplateUtil.hDel(RedisConstants.REDIS_KEY_POST_SINGLE, postId.toString());
     }
 }

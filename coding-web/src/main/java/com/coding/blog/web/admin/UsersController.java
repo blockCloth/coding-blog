@@ -61,7 +61,6 @@ public class UsersController {
         if (token == null) {
             return ResultObject.validateFailed("用户名或密码错误");
         }
-
         // 将 JWT 传递回客户端
         Map<String, String> tokenMap = new HashMap<>();
         tokenMap.put("token", token);

@@ -5,6 +5,7 @@ import com.coding.blog.service.dto.PostsParam;
 import com.coding.blog.service.entity.Posts;
 import com.coding.blog.service.service.IPostsService;
 import com.coding.blog.service.vo.PostDetailVo;
+import com.coding.blog.service.vo.PostsQueryVO;
 import com.coding.blog.service.vo.ResultObject;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -71,11 +72,10 @@ public class PostsController {
         return ResultObject.failed();
     }
 
-    @ApiOperation("查询文章列表")
+    @ApiOperation("模糊查询文章列表")
     @GetMapping("queryPostsList")
-    public ResultObject queryPostsList(@RequestParam(defaultValue = "1") Integer pageNum,
-                                       @RequestParam(defaultValue = "5") Integer pageSize){
-        IPage<Posts> postsIPage = postsService.queryPostsList(pageNum, pageSize);
+    public ResultObject queryPostsList( PostsQueryVO postsQueryVO){
+        IPage<Posts> postsIPage = postsService.queryPostsList(postsQueryVO);
 
         if (postsIPage != null){
             return ResultObject.success(postsIPage);

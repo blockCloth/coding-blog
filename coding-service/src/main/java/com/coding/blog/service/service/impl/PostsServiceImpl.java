@@ -1,6 +1,7 @@
 package com.coding.blog.service.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.coding.blog.common.enumapi.RedisConstants;
@@ -18,11 +19,13 @@ import com.coding.blog.service.mapper.TermRelationshipsMapper;
 import com.coding.blog.service.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.coding.blog.service.vo.PostDetailVo;
+import com.coding.blog.service.vo.PostsQueryVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.sql.SQLDataException;
 import java.time.LocalDateTime;
@@ -171,18 +174,6 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
     }
 
     @Override
-    public IPage<Posts> queryPostsList(Integer pageNum, Integer pageSize) {
-        IPage<Posts> postsIPage = (IPage<Posts>) redisTemplateUtil.get(RedisConstants.REDIS_KEY_POST);
-        if (postsIPage == null) {
-            Page<Posts> page = new Page(pageNum, pageSize);
-            Page<Posts> postsPage = postsMapper.selectPage(page, null);
-            redisTemplateUtil.set(RedisConstants.REDIS_KEY_POST, postsPage);
-            postsIPage = postsPage;
-        }
-        return postsIPage;
-    }
-
-    @Override
     public boolean insertPostToTerm(Long postId, Long termTaxonomyId) {
         return termRelationshipsService.insertOrUpdate(termTaxonomyId, postId);
     }
@@ -210,6 +201,20 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
     @Override
     public boolean deletePostToTags(Long postId) {
         return postTagRelationService.deletePostsTag(postId);
+    }
+
+    @Override
+    public IPage<Posts> queryPostsList(PostsQueryVO postsQueryVO) {
+        Page<Posts> page = new Page(postsQueryVO.getPageNum(),postsQueryVO.getPageSize());
+        QueryWrapper<Posts> queryWrapper = new QueryWrapper();
+
+        if (postsQueryVO.getPostsTitle() != null && postsQueryVO.getPostsTitle() != "")
+            queryWrapper.like("post_title",postsQueryVO.getPostsTitle());
+
+        if (postsQueryVO.getPostStatus() != null && postsQueryVO.getPostStatus() != "")
+            queryWrapper.eq("post_status",postsQueryVO.getPostStatus());
+
+        return postsMapper.selectPage(page,queryWrapper);
     }
 
     /**

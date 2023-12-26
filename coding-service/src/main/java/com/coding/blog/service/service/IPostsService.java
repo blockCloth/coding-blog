@@ -5,6 +5,7 @@ import com.coding.blog.service.dto.PostsParam;
 import com.coding.blog.service.entity.Posts;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.coding.blog.service.vo.PostDetailVo;
+import com.coding.blog.service.vo.PostsQueryVO;
 
 import java.util.List;
 
@@ -26,8 +27,6 @@ public interface IPostsService extends IService<Posts> {
 
     PostDetailVo queryPostDetailById(Long postId);
 
-    IPage<Posts> queryPostsList(Integer pageNum, Integer pageSize);
-
     boolean insertPostToTerm(Long postId, Long termTaxonomyId);
 
     boolean insertPostToTags(Long postId, List<Long> tagsId);
@@ -39,4 +38,6 @@ public interface IPostsService extends IService<Posts> {
     boolean deletePostToTerm(Long postId);
 
     boolean deletePostToTags(Long postId);
+
+    IPage<Posts> queryPostsList(PostsQueryVO postsQueryVO);
 }

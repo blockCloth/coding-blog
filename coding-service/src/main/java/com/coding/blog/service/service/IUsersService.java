@@ -46,4 +46,6 @@ public interface IUsersService extends IService<Users> {
      * 获取当前登录用户ID
      */
     Long getCurrentUserId();
+
+    String refreshToken(String oldToken);
 }

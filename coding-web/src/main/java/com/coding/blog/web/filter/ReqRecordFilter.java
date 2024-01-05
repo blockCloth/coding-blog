@@ -35,6 +35,7 @@ public class ReqRecordFilter implements Filter {
         } finally {
             long end = System.currentTimeMillis();
             long costTime = end - start;
+
             log.info("{} - cost:\t{}",request.getRequestURI(),costTime);
             // 根据请求上下文，输出请求日志
             buildRequestLog(ReqInfoContext.getReqInfo(), request, System.currentTimeMillis() - start);

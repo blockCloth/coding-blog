@@ -22,8 +22,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,14 +57,35 @@ public class UsersController {
     @ResponseBody
     public ResultObject login(@Validated UsersLoginParam users, BindingResult result) {
         String token = usersService.login(users.getUserLogin(), users.getUserPass());
-
         if (token == null) {
             return ResultObject.validateFailed("用户名或密码错误");
         }
         // 将 JWT 传递回客户端
-        Map<String, String> tokenMap = new HashMap<>();
+        Map<String, Object> tokenMap = new HashMap<>();
         tokenMap.put("token", token);
         tokenMap.put("tokenHead", tokenHead);
+        //获取JWT的过期时间
+        Date expirationFromToken = jwtTokenUtil.getExpirationFromToken(token);
+        tokenMap.put("expiration",expirationFromToken.getTime());
+
+        return ResultObject.success(tokenMap);
+    }
+
+    @ApiOperation(value = "刷新token")
+    @RequestMapping(value = "/refreshToken", method = RequestMethod.POST)
+    @ResponseBody
+    public ResultObject refreshToken(HttpServletRequest request) {
+        String oldToken = request.getHeader(tokenHeader);
+        String refreshToken = usersService.refreshToken(oldToken);
+        if (refreshToken == null) {
+            return ResultObject.failed("token已经过期！");
+        }
+        Map<String, Object> tokenMap = new HashMap<>();
+        tokenMap.put("token", refreshToken);
+        tokenMap.put("tokenHead", tokenHead);
+        //获取JWT的过期时间
+        Date expirationFromToken = jwtTokenUtil.getExpirationFromToken(refreshToken);
+        tokenMap.put("expiration",expirationFromToken.getTime());
         return ResultObject.success(tokenMap);
     }
 
@@ -177,20 +198,6 @@ public class UsersController {
         log.warn("用户密码修改失败！{}",LocalDateTime.now());
         return ResultObject.failed("用户密码修改失败！");
     }
-
-    // @ApiOperation("刷新token")
-    // @GetMapping("/referToken")
-    // public ResultObject referToken(HttpServletRequest request,
-    //                                HttpServletResponse response){
-    //     String token = request.getHeader(tokenHeader);
-    //
-    //     if (usersService.updateUserPass(newPass,oldPass)){
-    //         log.info("用户密码修改成功！{}",LocalDateTime.now());
-    //         return ResultObject.success("用户密码修改成功！");
-    //     }
-    //     log.warn("用户密码修改失败！{}",LocalDateTime.now());
-    //     return ResultObject.failed("用户密码修改失败！");
-    // }
 
     @ApiOperation("获取指定用户的角色")
     @GetMapping("/role/query")

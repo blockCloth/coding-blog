@@ -31,9 +31,16 @@
         <javax.validation.version>2.0.1.Final</javax.validation.version>
         <mapstruct.version>1.4.2.Final</mapstruct.version>
         <hutool.version>5.7.16</hutool.version>
+        <qrcode-plugin.version>3.0.0</qrcode-plugin.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>com.github.liuyueyi.media</groupId>
+            <artifactId>qrcode-plugin</artifactId>
+            <version>${qrcode-plugin.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>

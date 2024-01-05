@@ -245,4 +245,9 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
         return userDetails.getUsers().getUsersId();
     }
 
+    @Override
+    public String refreshToken(String oldToken) {
+        return jwtTokenUtil.refreshToken(oldToken);
+    }
+
 }
